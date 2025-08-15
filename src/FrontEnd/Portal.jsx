@@ -85,7 +85,7 @@ function Portal() {
         <div className="empdet">
           <p><b><u>Employement Details:</u></b></p>
            <label htmlFor="early">Earliest joining date:</label>
-            <input type="date" />
+            <input type="date"  />
 
             <label htmlFor="salary">Salary Expectation:</label>
             <input type="number" />            
