@@ -4,6 +4,7 @@ import "./Portal.css";
 function Portal() {
   const [country, setCountry] = useState([]);         // [{code, name}]
   const [nationality, setNationality] = useState(""); // selected value
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all?fields=name,cca2")
@@ -16,6 +17,8 @@ function Portal() {
       })
       .catch(console.error);
   }, []);
+
+  const handleClick = ()=> setOpen(o => !o); 
 
   return (
     <>
@@ -87,6 +90,37 @@ function Portal() {
             <label htmlFor="salary">Salary Expectation:</label>
             <input type="number" />            
         </div>
+        <div>
+        <div className="upload">
+          <p><b><u>Documents Upload:</u></b></p>
+           <label htmlFor="resume">Resume:</label>
+            <input type="file" />
+
+            <label htmlFor="coverle">Cover Letter:</label>
+            <input type="file" />  
+
+            <label htmlFor="otherdocs">Other Documents:</label>
+            <input type="file" />  
+        </div>
+
+        <div>
+            <div className="lastBox">
+            <input type="checkbox" /><label htmlFor="term">By clicking here you are accepting terms and conditions.</label>
+            <button  type="button"
+                     className="info"
+                     aria-expanded={open}
+                     aria-controls="popup1"
+                     onClick={handleClick}>
+            ℹ️
+            </button>
+            <div id="popup1" className={`popup right ${open ? "show" : ""}`}>type popup</div>
+           </div>
+        </div>
+        </div>
+
+        
+        <button className="btnS">Submit</button>
+       
       </div>
     </>
   );
