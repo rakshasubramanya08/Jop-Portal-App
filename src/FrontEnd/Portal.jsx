@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Portal.css";
+import EmployeeDetails from "./EmployeeDetails";
 
 function Portal() {
   const [country, setCountry] = useState([]);         // [{code, name}]
@@ -82,15 +83,8 @@ function Portal() {
           </div>
         </div>
 
-        <div className="empdet">
-          <p><b><u>Employement Details:</u></b></p>
-           <label htmlFor="early">Earliest joining date:</label>
-            <input type="date"  />
-
-            <label htmlFor="salary">Salary Expectation:</label>
-            <input type="number" />            
-        </div>
-        <div>
+        <EmployeeDetails />
+        
         <div className="upload">
           <p><b><u>Documents Upload:</u></b></p>
            <label htmlFor="resume">Resume:</label>
@@ -116,7 +110,7 @@ function Portal() {
             <div id="popup1" className={`popup right ${open ? "show" : ""}`}>type popup</div>
            </div>
         </div>
-        </div>
+        
 
         
         <button className="btnS">Submit</button>
