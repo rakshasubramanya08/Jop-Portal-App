@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Portal.css";
 import EmployeeDetails from "./EmployeeDetails";
+import PersonalDetails from "./PersonalDetails";
 
 function Portal() {
   const [country, setCountry] = useState([]);         // [{code, name}]
@@ -31,42 +32,7 @@ function Portal() {
       </div>
 
       <div className="box">
-        <div className="body2">
-          <p><b><u>Personal details:</u></b></p>
-
-          <label htmlFor="name">Name:</label>
-          <input id="name" type="text" />
-
-          <label htmlFor="vorname">Vorname:</label>
-          <input id="vorname" type="text" />
-
-          <div className="body2">
-            <label htmlFor="dob">Date Of Birth:</label>
-            <input id="dob" type="date" />
-
-            <label htmlFor="nationality">Nationality:</label>
-            <select
-              id="nationality"
-              value={nationality}
-              onChange={(e) => setNationality(e.target.value)}
-            >
-              <option value="">Select a country</option>
-              {country.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <div className="body2">
-            <label htmlFor="phone">Phone:</label>
-            <input id="phone" type="text" />
-
-            <label htmlFor="email">Email:</label>
-            <input type="text" />
-            </div>  
-           
-          </div>
-        </div>
+        <PersonalDetails />
 
         <div className="body3">
           <p><b><u>Address:</u></b></p>
