@@ -1,11 +1,18 @@
 import React from 'react'
-import { useEffect, useState} from 'react';
+import { useEffect, useState, useMemo} from 'react';
 import './PersonalDetails.css';
 
 const PersonalDetails = () => {
 
     const [country, setCountry] = useState([]);         // [{code, name}]
     const [nationality, setNationality] = useState(""); // selected value
+    const [date, setDate] = useState("");
+
+    const minDate = "1980-01-01";
+   const maxDate = useMemo(() => {
+    const y = new Date().getFullYear() - 1;   // last year
+    return `${y}-12-31`;
+  }, []);
 
       useEffect(() => {
     fetch("https://restcountries.com/v3.1/all?fields=name,cca2")
@@ -32,7 +39,11 @@ const PersonalDetails = () => {
 
           <div className="body2">
             <label htmlFor="dob">Date Of Birth:</label>
-            <input id="dob" type="date" />
+            <input id="dob" type="date" 
+                            min={minDate}  max={maxDate} 
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            required />
 
             <label htmlFor="nationality">Nationality:</label>
             <select
