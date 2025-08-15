@@ -53,6 +53,14 @@ function Portal() {
                 </option>
               ))}
             </select>
+            <div className="body2">
+            <label htmlFor="phone">Phone:</label>
+            <input id="phone" type="text" />
+
+            <label htmlFor="email">Email:</label>
+            <input type="text" />
+            </div>  
+           
           </div>
         </div>
 
@@ -66,12 +74,18 @@ function Portal() {
           <input id="city" type="text" />
 
           <div className="body3">
-            <label htmlFor="zip">Zip:</label>
+            <label htmlFor="zip">Postal code:</label>
             <input id="zip" type="text" />
-
-            <label htmlFor="phone">Phone:</label>
-            <input id="phone" type="text" />
           </div>
+        </div>
+
+        <div className="empdet">
+          <p><b><u>Employement Details:</u></b></p>
+           <label htmlFor="early">Earliest joining date:</label>
+            <input type="date" />
+
+            <label htmlFor="salary">Salary Expectation:</label>
+            <input type="number" />            
         </div>
       </div>
     </>
