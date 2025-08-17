@@ -7,7 +7,7 @@ Applicants can enter personal details, upload CV, cover letter, other documents,
 
 ## Features
 
-- 🌐 **Frontend** (React)
+- **Frontend** (React)
   - Form with applicant details (name, email, phone, date of birth, nationality, address, expected salary, earliest joining date, cover letter text).
   - File uploads: Resume, Cover Letter, Other Documents (multi-file).
   - Country dropdown for **Nationality** (auto-fetched from REST Countries API).
