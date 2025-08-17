@@ -1,11 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Portal.css";
-
 
 export default function Portal() {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [preview, setPreview] = useState("");
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    // Fetch countries list once
+    fetch("https://restcountries.com/v3.1/all?fields=name")
+      .then((res) => res.json())
+      .then((data) => {
+        const sorted = data
+          .map((c) => c.name.common)
+          .sort((a, b) => a.localeCompare(b));
+        setCountries(sorted);
+      })
+      .catch((err) => console.error("Country fetch error:", err));
+  }, []);
 
   const handleClick = () => setOpen((o) => !o);
 
@@ -16,7 +29,6 @@ export default function Portal() {
 
     const fd = new FormData(e.target);
 
-    // Debug log so you see what's sent
     for (const [k, v] of fd.entries()) {
       console.log("FD:", k, v instanceof File ? v.name : v);
     }
@@ -51,7 +63,6 @@ export default function Portal() {
     <>
       <h1 className="heading">Job Application Portal</h1>
 
-      {/* Keep all inputs as in your script */}
       <form className="box" onSubmit={submitApplication}>
         <div className="body1">
           <p>
@@ -62,8 +73,8 @@ export default function Portal() {
           <h2>FrontEnd Developer</h2>
         </div>
 
-        {/* Basic details (text inputs) */}
-        <div style={{ display: "grid", gap: 8 }}>
+        {/* Personal Details */}
+        <div>
           <label>
             Name:
             <input type="text" name="name" required />
@@ -78,9 +89,26 @@ export default function Portal() {
             Phone:
             <input type="text" name="phone" />
           </label>
+
+          <label>
+            Date of Birth:
+            <input type="date" name="dob" />
+          </label>
+
+          <label>
+            Nationality:
+            <select name="nationality" required>
+              <option value="">-- Select Nationality --</option>
+              {countries.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
-        {/* Address section exactly like your layout */}
+        {/* Address */}
         <div className="body3">
           <p>
             <b>
@@ -100,16 +128,26 @@ export default function Portal() {
           </div>
         </div>
 
-        {/* Employee-like extra info (from your script) */}
-        <div style={{ display: "grid", gap: 8 }}>
+        {/* Employment Info */}
+        <div>
           <label>
-            Position:
-            <input id="position" name="position" type="text" />
+            Salary Expectations:
+            <input
+              id="salaryExpectations"
+              name="salaryExpectations"
+              type="number"
+              placeholder="e.g., 65000"
+              min="0"
+            />
           </label>
 
           <label>
-            Experience (years):
-            <input id="experienceYears" name="experienceYears" type="number" />
+            Earliest Joining Date:
+            <input
+              id="earliestJoiningDate"
+              name="earliestJoiningDate"
+              type="date"
+            />
           </label>
 
           <label>
@@ -118,7 +156,7 @@ export default function Portal() {
           </label>
         </div>
 
-        {/* Files with your exact field names */}
+        {/* File Uploads */}
         <div className="upload">
           <p>
             <b>
@@ -136,7 +174,7 @@ export default function Portal() {
           <input id="otherdocs" type="file" name="otherdocs" multiple />
         </div>
 
-        {/* Terms toggle exactly like your script */}
+        {/* Terms */}
         <div>
           <div className="lastBox">
             <input type="checkbox" name="terms" required />
@@ -194,7 +232,6 @@ export default function Portal() {
         </button>
       </form>
 
-      {/* Show Ethereal preview link from backend */}
       {preview && (
         <p style={{ marginTop: 12 }}>
           Preview email:{" "}

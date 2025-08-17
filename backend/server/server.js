@@ -79,7 +79,7 @@ function findReplyTo(body) {
   return undefined;
 }
 
-// Simple health
+// Health
 app.get("/health", (_, res) => res.json({ ok: true }));
 
 // Optional echo for debugging
@@ -111,7 +111,8 @@ app.post("/api/apply", upload.any(), async (req, res) => {
       contentType: f.mimetype
     }));
 
-    const subjectHint =
+    // Subject hint now prefers name; also appends salary/joining if present
+    const nameHint =
       fields.name ||
       fields.fullname ||
       fields.full_name ||
@@ -119,10 +120,16 @@ app.post("/api/apply", upload.any(), async (req, res) => {
       fields.applicant ||
       "Applicant";
 
+    const salary = fields.salaryExpectations ? ` | Salary: ${fields.salaryExpectations}` : "";
+    const joining = fields.earliestJoiningDate ? ` | Joining: ${fields.earliestJoiningDate}` : "";
+    const dob = fields.dob ? ` | DOB: ${fields.dob}` : "";
+    const nationality = fields.nationality ? ` | Nationality: ${fields.nationality}` : "";
+    const subject = `Job Application: ${nameHint}${salary}${joining}${dob}${nationality}`;
+
     const info = await transporter.sendMail({
       from: '"Job Portal" <no-reply@example.com>',
-      to: "hr@example.com", // with Ethereal, any address is fine
-      subject: `Job Application: ${subjectHint}`,
+      to: "rakshasubramanya08@gmail.com", // with Ethereal, any address is fine
+      subject,
       text:
         "A new application was submitted.\n\n" +
         Object.entries(fields)
