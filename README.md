@@ -1,11 +1,11 @@
-# 📄 Job Application Portal
+# Job Application Portal
 
 A full-stack **Job Application Portal** built with **React (frontend)** and **Node.js + Express (backend)**.  
 Applicants can enter personal details, upload CV, cover letter, other documents, and submit directly. The backend processes the data, stores files temporarily, and sends an **email notification** with attachments using Nodemailer.
 
 ---
 
-## 🚀 Features
+## Features
 
 - 🌐 **Frontend** (React)
   - Form with applicant details (name, email, phone, date of birth, nationality, address, expected salary, earliest joining date, cover letter text).
@@ -22,7 +22,7 @@ Applicants can enter personal details, upload CV, cover letter, other documents,
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 ```
 │
 ├── backend/ # Node.js + Express server
@@ -43,24 +43,24 @@ Applicants can enter personal details, upload CV, cover letter, other documents,
 
 ---
 
-## ⚡ Setup & Run
+## Setup & Run
 
-### 1️⃣ Clone the repo
+### Clone the repo
 ```
-git clone https://github.com/your-username/job-portal.git
-cd job-portal
+git clone https://github.com/rakshasubramanya08/Jop-Portal-App.git
+cd Job-Portal-App
 ```
 
 ## Backend Setup
+```
 cd backend
 npm install
-
+```
 
 ### Create a .env file in backend/:
 ```
 PORT=4000
-EMAIL_USER=youraddress@gmail.com   # Ethereal or Gmail
-EMAIL_PASS=yourapppassword         # App password (not your real Gmail password!)
+TO_EMAIL=youraddress@gmail.com   # Ethereal or Gmail
 ```
 
 ## Run backend:
@@ -75,7 +75,7 @@ npm install
 npm run dev
 ```
 
-Open in browser: http://localhost:5173
+Open in browser: http://localhost:3000
 
 ## Email Configuration
 

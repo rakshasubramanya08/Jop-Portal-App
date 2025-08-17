@@ -128,7 +128,7 @@ app.post("/api/apply", upload.any(), async (req, res) => {
 
     const info = await transporter.sendMail({
       from: '"Job Portal" <no-reply@example.com>',
-      to: "rakshasubramanya08@gmail.com", // with Ethereal, any address is fine
+      to: process.env.TO_EMAIL || "rakshasubramanya08@gmail.com", // with Ethereal, any address is fine
       subject,
       text:
         "A new application was submitted.\n\n" +
