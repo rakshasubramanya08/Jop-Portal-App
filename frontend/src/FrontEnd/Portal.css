@@ -1,111 +1,141 @@
-.heading{
-    text-align: center;
+/* Reset + base */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(135deg, #1d3557, #457b9d);
+  color: #222;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
 }
 
-.body1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-.body1>h2{
-    margin-left: 10px;
-}
-
-.body3{
-    padding: 15px;
-    margin-top: 0;
-}
-
-.body3>label{
-  margin-left: 5%;
-}
-
-.body3>input{
-  width: 15vw;
-  height: 5vh;
-  margin-left: 5px;
-  margin-right: 5%;
-}
-
-.upload>input{
-  height: 5vh;
-  padding: 10px;
-}
-.upload{
-    margin-top: 4%;
-    margin-bottom: 3%;
-}
-
-body{
-    background-image: linear-gradient(rgba(238, 238, 101, 0.904),white,rgba(235, 235, 98, 0.904));
-}
-
-.box{
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.lastBox{
-    display: inline-block;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: relative;
-    gap: .5rem;
-}
-.info{
-    background: none;
-    border: 0px;
-    cursor: pointer;
-    font-size: 18px;
-    line-height: 1;
-}
-.popup {
-  position: absolute;
-  bottom: calc(100% + 8px); /* show above the ℹ️ button */
-  /* right: 0; */
-  top: 0;
-  left: 100%;
-  padding: 8px 12px;
-  background: #111;
+/* Heading */
+.heading {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
   color: #fff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Main form card */
+.box {
+  width: 100%;
+  max-width: 700px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* Section titles */
+.body1 p, .body3 p, .upload p {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1d3557;
+}
+
+/* Labels + inputs */
+label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.2);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .15s ease;
-  z-index: 999;
+  font-size: 14px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
 }
+
+input:focus,
+textarea:focus {
+  border-color: #457b9d;
+  outline: none;
+}
+
+/* Address grid */
+.body3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.body3 p {
+  grid-column: span 2;
+  margin-top: 12px;
+}
+
+/* File upload section */
+.upload input[type="file"] {
+  display: block;
+  margin-bottom: 16px;
+}
+
+/* Terms box */
+.lastBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.info {
+  margin-left: auto;
+  background: #457b9d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+/* Terms popup */
+.popup {
+  display: none;
+  background: #f8fafc;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .popup.show {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
+  display: block;
 }
 
-.popup::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  right: 12px;
-  width: 10px; height: 10px;
-  background: #111;
-  transform: rotate(45deg);
-}
-.popup.right {
-  top:50%; left: calc(100% + 8px); bottom:auto;
-  transform: translateY(-50%);
-}
-.popup.right::after {
-  top:50%; left:-5px; transform: translateY(-50%) rotate(45deg);
-}
-
+/* Submit button */
 .btnS {
-    cursor: pointer;
-    background-color: rgba(185, 46, 228, 0.836);
-    color: white;
-    font-size: medium;
-    margin-top: 2%;
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  background: #1d3557;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btnS:hover {
+  background: #457b9d;
 }

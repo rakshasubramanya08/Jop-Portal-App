@@ -4,36 +4,28 @@ const cors = require("cors");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
-const { z } = require("zod");
 
 const app = express();
+
+// CORS
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:3000" }));
 app.use(express.json({ limit: "1mb" }));
 
-// Rate limiter
-const limiter = rateLimit({
-  windowMs: 60_000,
-  max: 30,
-});
-app.use(limiter);
+// Rate limit
+app.use(
+  rateLimit({
+    windowMs: 60_000,
+    max: 60
+  })
+);
 
-// File upload setup
+// Multer: accept ANY field names + files
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB per file
 });
 
-// Validation schema
-const ApplySchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  phone: z.string().optional(),
-  position: z.string().optional(),
-  experienceYears: z.string().optional(),
-  coverLetterText: z.string().optional(),
-});
-
-// --- Nodemailer transporter (Ethereal) ---
+// Create Ethereal test transporter on startup
 let transporter;
 (async () => {
   const testAccount = await nodemailer.createTestAccount();
@@ -44,96 +36,113 @@ let transporter;
   transporter = nodemailer.createTransport({
     host: testAccount.smtp.host,
     port: testAccount.smtp.port,
-    secure: testAccount.smtp.secure, // true for 465, false for 587
-    auth: {
-      user: testAccount.user,
-      pass: testAccount.pass,
-    },
+    secure: testAccount.smtp.secure,
+    auth: { user: testAccount.user, pass: testAccount.pass }
   });
 })();
 
-// Helper: render email HTML
-function renderHTML(data) {
+// Utility: safe HTML
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Build HTML table from all text fields
+function renderHTMLFromBody(body) {
+  const rows = Object.entries(body).map(
+    ([k, v]) =>
+      `<tr><td style="padding:6px 10px;border:1px solid #ddd;"><b>${esc(
+        k
+      )}</b></td><td style="padding:6px 10px;border:1px solid #ddd;">${esc(
+        v
+      )}</td></tr>`
+  );
   return `
-    <div style="font-family:system-ui,Segoe UI,Arial;">
-      <h2>New Job Application</h2>
-      <table cellspacing="0" cellpadding="6" style="border-collapse:collapse">
-        <tr><td><b>Name</b></td><td>${data.name}</td></tr>
-        <tr><td><b>Email</b></td><td>${data.email}</td></tr>
-        ${data.phone ? `<tr><td><b>Phone</b></td><td>${data.phone}</td></tr>` : ""}
-        ${data.position ? `<tr><td><b>Position</b></td><td>${data.position}</td></tr>` : ""}
-        ${data.experienceYears ? `<tr><td><b>Experience</b></td><td>${data.experienceYears} years</td></tr>` : ""}
+    <div style="font-family:system-ui,Segoe UI,Arial;color:#111">
+      <h2 style="margin:0 0 8px 0;">New Job Application</h2>
+      <table cellspacing="0" cellpadding="0" style="border-collapse:collapse">
+        ${rows.join("")}
       </table>
-      ${data.coverLetterText ? `<h3 style="margin-top:16px;">Cover Letter</h3><pre style="white-space:pre-wrap">${data.coverLetterText}</pre>` : ""}
+      <p style="margin-top:14px;color:#444;">Attached: uploaded documents.</p>
     </div>
   `;
 }
 
-// Helper: collect file attachments
-function filesToAttachments(req, fieldNames) {
-  const attachments = [];
-  fieldNames.forEach((name) => {
-    (req.files?.[name] || []).forEach((f) => {
-      attachments.push({
-        filename: f.originalname,
-        content: f.buffer,
-        contentType: f.mimetype,
-      });
-    });
-  });
-  return attachments;
-}
-
-// Health check
-app.get("/health", (_, res) => res.json({ ok: true }));
-
-// Main route
-app.post(
-  "/api/apply",
-  upload.fields([
-    { name: "cv", maxCount: 1 },
-    { name: "coverLetterFile", maxCount: 1 },
-    { name: "otherdocs", maxCount: 5 }, // allow up to 5 other files
-  ]),
-  async (req, res) => {
-    try {
-      const parsed = ApplySchema.parse(req.body);
-      const attachments = filesToAttachments(req, [
-        "cv",
-        "coverLetterFile",
-        "otherdocs",
-      ]);
-
-      if (!transporter) {
-        return res.status(500).json({ ok: false, error: "Mailer not ready yet" });
-      }
-
-      // Send email (to Ethereal)
-      const info = await transporter.sendMail({
-        from: '"Job Portal" <no-reply@example.com>',
-        to: "hr@example.com", // doesn’t matter with Ethereal
-        subject: `Job Application: ${parsed.name}`,
-        text: `Application from ${parsed.name} (${parsed.email})`,
-        html: renderHTML(parsed),
-        attachments,
-        replyTo: parsed.email,
-      });
-
-      console.log("Message sent:", info.messageId);
-      console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
-
-      res.json({ ok: true, message: "Application submitted", preview: nodemailer.getTestMessageUrl(info) });
-    } catch (err) {
-      console.error("Server error:", err);
-      if (err instanceof z.ZodError) {
-        return res.status(400).json({ ok: false, error: "Invalid input", details: err.flatten() });
-      }
-      res.status(500).json({ ok: false, error: "Email failed", details: err.message });
+// Find first email-looking value among fields for replyTo
+function findReplyTo(body) {
+  const emailRegex = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
+  for (const [, v] of Object.entries(body)) {
+    if (typeof v === "string" && emailRegex.test(v)) {
+      const match = v.match(emailRegex);
+      if (match) return match[0];
     }
   }
-);
+  return undefined;
+}
+
+// Simple health
+app.get("/health", (_, res) => res.json({ ok: true }));
+
+// Optional echo for debugging
+app.post("/debug/echo", upload.any(), (req, res) => {
+  res.json({
+    fields: req.body,
+    files: (req.files || []).map((f) => ({
+      fieldname: f.fieldname,
+      originalname: f.originalname,
+      mimetype: f.mimetype,
+      size: f.size
+    }))
+  });
+});
+
+// Main endpoint (accepts any fields + files)
+app.post("/api/apply", upload.any(), async (req, res) => {
+  try {
+    if (!transporter) {
+      return res
+        .status(503)
+        .json({ ok: false, error: "Mailer not ready. Try again in a second." });
+    }
+
+    const fields = req.body || {};
+    const attachments = (req.files || []).map((f) => ({
+      filename: f.originalname || f.fieldname,
+      content: f.buffer,
+      contentType: f.mimetype
+    }));
+
+    const subjectHint =
+      fields.name ||
+      fields.fullname ||
+      fields.full_name ||
+      fields.candidateName ||
+      fields.applicant ||
+      "Applicant";
+
+    const info = await transporter.sendMail({
+      from: '"Job Portal" <no-reply@example.com>',
+      to: "hr@example.com", // with Ethereal, any address is fine
+      subject: `Job Application: ${subjectHint}`,
+      text:
+        "A new application was submitted.\n\n" +
+        Object.entries(fields)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join("\n"),
+      html: renderHTMLFromBody(fields),
+      attachments,
+      ...(findReplyTo(fields) ? { replyTo: findReplyTo(fields) } : {})
+    });
+
+    const preview = nodemailer.getTestMessageUrl(info);
+    console.log("Message sent:", info.messageId);
+    console.log("Preview URL:", preview);
+
+    res.json({ ok: true, message: "Application submitted", preview });
+  } catch (err) {
+    console.error("Server error:", err);
+    res.status(500).json({ ok: false, error: "Email failed", details: err.message });
+  }
+});
 
 const port = Number(process.env.PORT || 4000);
-app.listen(port, () => {
-  console.log(`API listening on :${port}`);
-});
+app.listen(port, () => console.log(`API listening on :${port}`));
