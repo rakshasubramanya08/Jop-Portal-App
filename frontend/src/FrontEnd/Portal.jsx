@@ -93,7 +93,16 @@ export default function Portal() {
 
           <label>
             Date of Birth:
-            <input type="date" name="dob" />
+            <input
+              type="date"
+              name="dob"
+              max={
+                new Date(new Date().getFullYear() - 1, 11, 31)
+                  .toISOString()
+                  .split("T")[0]
+              }
+              required
+            />
           </label>
 
           <label>
@@ -148,6 +157,8 @@ export default function Portal() {
               id="earliestJoiningDate"
               name="earliestJoiningDate"
               type="date"
+              min={new Date().toISOString().split("T")[0]}
+              required
             />
           </label>
 
@@ -192,7 +203,7 @@ export default function Portal() {
               ℹ️
             </button>
             <div id="popup1" className={`popup right ${open ? "show" : ""}`}>
-            <TermsAndCondition />
+              <TermsAndCondition />
             </div>
           </div>
         </div>
